@@ -11,19 +11,8 @@ import (
 type post struct {
 	username string
 	message  string
-	time     string
+	time     time.Time
 }
-
-var posts = []post{
-	{username: "john", message: "hi, what's up?", time: "14:41"},
-	{username: "jane", message: "not much", time: "14:43"},
-	{username: "mofe", message: "Testing Text", time: "2:26"},
-}
-
-var messages *post
-var history *tui.Box
-var input *tui.Entry
-var newLabel *tui.Label
 
 func chat() {
 	sidebar := tui.NewVBox(
@@ -37,10 +26,10 @@ func chat() {
 	)
 	sidebar.SetBorder(true)
 
-	history = tui.NewVBox()
-	for _, m := range posts {
+	history := tui.NewVBox()
+	for _, m := range getNote() {
 		history.Append(tui.NewHBox(
-			tui.NewLabel(m.time),
+			tui.NewLabel(m.time.Format("15:04")),
 			tui.NewPadder(1, 0, tui.NewLabel(fmt.Sprintf("<%s>", m.username))),
 			tui.NewLabel(m.message),
 			tui.NewSpacer(),
@@ -54,7 +43,7 @@ func chat() {
 	historyBox := tui.NewVBox(historyScroll)
 	historyBox.SetBorder(true)
 
-	input = tui.NewEntry()
+	input := tui.NewEntry()
 	input.SetFocused(true)
 	input.SetSizePolicy(tui.Expanding, tui.Maximum)
 
@@ -65,15 +54,15 @@ func chat() {
 	chat := tui.NewVBox(historyBox, inputBox)
 	chat.SetSizePolicy(tui.Expanding, tui.Expanding)
 
-	messages = &post{}
+	messages := &post{}
 	input.OnSubmit(func(e *tui.Entry) {
 		messages = &post{
 			username: "mofe",
-			time:     time.Now().Format("15:04"),
+			time:     time.Now(),
 			message:  e.Text(),
 		}
 		history.Append(tui.NewHBox(
-			tui.NewLabel(messages.time),
+			tui.NewLabel(messages.time.Format("15:04")),
 			tui.NewPadder(1, 0, tui.NewLabel(fmt.Sprintf("<%s>", messages.username))),
 			tui.NewLabel(messages.message),
 			tui.NewSpacer(),
@@ -81,8 +70,6 @@ func chat() {
 		input.SetText("")
 		messages.storeMessage()
 	})
-
-	log.Printf("Checking %v\n", newLabel)
 
 	root := tui.NewHBox(sidebar, chat)
 
