@@ -1,7 +1,5 @@
 package main
 
-import "log"
-
 func (me *post) storeMessage() {
 
 	ldb.stmtInsertMessage.Exec(me.username, me.time, me.message)
@@ -26,7 +24,5 @@ func getNote() (result []post) {
 		}
 		result = append(result, post)
 	}
-	log.Printf("\nThese are the results: %s\n ", result)
-
 	return result
 }

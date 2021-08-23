@@ -15,6 +15,8 @@ type post struct {
 }
 
 func chat() {
+
+	// CREATES SIDEBARS
 	sidebar := tui.NewVBox(
 		tui.NewLabel("CHANNELS"),
 		tui.NewLabel("general"),
@@ -26,7 +28,9 @@ func chat() {
 	)
 	sidebar.SetBorder(true)
 
+	// CREATES THE HISTORY OF USERS TEXT
 	history := tui.NewVBox()
+
 	for _, m := range getNote() {
 		history.Append(tui.NewHBox(
 			tui.NewLabel(m.time.Format("15:04")),
@@ -35,28 +39,34 @@ func chat() {
 			tui.NewSpacer(),
 		))
 	}
-
+	// SETS USERS TEXT AREA AND TEXT AT THE BOTTOM OF PAGE
 	historyScroll := tui.NewScrollArea(history)
 	historyScroll.SetAutoscrollToBottom(true)
-	historyScroll.ScrollToBottom()
 
+	historyScroll.ScrollToTop()
+	//historyScroll.ScrollToTop()
+
+	// CREATE VERTICAL BOX FOR USERS TEXT
 	historyBox := tui.NewVBox(historyScroll)
 	historyBox.SetBorder(true)
 
+	// CREATES, POSITIONS, AND GIVES SIZE POLICY OF INPUT
 	input := tui.NewEntry()
 	input.SetFocused(true)
 	input.SetSizePolicy(tui.Expanding, tui.Maximum)
 
+	// CREATE HORIZONTAL BOX FOR USERS INPUT
 	inputBox := tui.NewHBox(input)
 	inputBox.SetBorder(true)
 	inputBox.SetSizePolicy(tui.Expanding, tui.Maximum)
 
+	// CREATES A BOX TO CONTAIN BOTH USER HISTORY AND INPUT WITHOUT BORDERS
 	chat := tui.NewVBox(historyBox, inputBox)
 	chat.SetSizePolicy(tui.Expanding, tui.Expanding)
 
-	messages := &post{}
+	//
 	input.OnSubmit(func(e *tui.Entry) {
-		messages = &post{
+		messages := &post{
 			username: "mofe",
 			time:     time.Now(),
 			message:  e.Text(),
@@ -71,15 +81,19 @@ func chat() {
 		messages.storeMessage()
 	})
 
+	// PUTS EVEERYTHING INSIDE THE ROOT BOX
 	root := tui.NewHBox(sidebar, chat)
-
 	ui, err := tui.New(root)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	ui.SetKeybinding("Esc", func() { ui.Quit() })
-
+	ui.SetKeybinding("Up", func() {
+		historyScroll.SetAutoscrollToBottom(false)
+		historyScroll.Scroll(0, -1)
+	})
+	ui.SetKeybinding("Down", func() { historyScroll.Scroll(0, 1) })
 	if err := ui.Run(); err != nil {
 		log.Fatal(err)
 	}
