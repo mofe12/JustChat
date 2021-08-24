@@ -14,7 +14,7 @@ type post struct {
 	time     time.Time
 }
 
-func chat() {
+func (c *chatView) chat() *tui.Box {
 
 	// CREATES SIDEBARS
 	sidebar := tui.NewVBox(
@@ -41,6 +41,7 @@ func chat() {
 	}
 	// SETS USERS TEXT AREA AND TEXT AT THE BOTTOM OF PAGE
 	historyScroll := tui.NewScrollArea(history)
+	c.historyScroll = historyScroll
 	historyScroll.SetAutoscrollToBottom(true)
 
 	historyScroll.ScrollToTop()
@@ -66,6 +67,7 @@ func chat() {
 
 	//
 	input.OnSubmit(func(e *tui.Entry) {
+		historyScroll.SetAutoscrollToBottom(true)
 		messages := &post{
 			username: "mofe",
 			time:     time.Now(),
@@ -94,7 +96,5 @@ func chat() {
 		historyScroll.Scroll(0, -1)
 	})
 	ui.SetKeybinding("Down", func() { historyScroll.Scroll(0, 1) })
-	if err := ui.Run(); err != nil {
-		log.Fatal(err)
-	}
+	return root
 }
