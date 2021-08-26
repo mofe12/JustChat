@@ -26,3 +26,7 @@ func getNote() (result []post) {
 	}
 	return result
 }
+
+func createUser(user string) {
+	ldb.stmtCreateUser.Exec(user)
+}

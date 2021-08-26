@@ -13,6 +13,7 @@ import (
 type LocalDatabase struct {
 	db                *sql.DB
 	stmtInsertMessage *sql.Stmt
+	stmtCreateUser    *sql.Stmt
 }
 
 func (me *LocalDatabase) init(filepath string) {
@@ -36,5 +37,10 @@ func (me *LocalDatabase) init(filepath string) {
 	if err != nil {
 		panic(err)
 	}
+	me.stmtCreateUser, err = me.db.Prepare(`
+	INSERT INTO users (
+		user,
+	)	VALUES (?)
+	`)
 
 }

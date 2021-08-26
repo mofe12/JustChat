@@ -17,8 +17,10 @@ func views() {
 	var currentView int
 
 	chatView := chatView{}
+	registerView := registerView{}
 	views := []tui.Widget{
-		tui.NewVBox(tui.NewLabel("Press right arrow to continue ...")),
+		registerView.register(),
+		// tui.NewVBox(tui.NewLabel("Press right arrow to continue ...")),
 		chatView.chat(),
 	}
 
