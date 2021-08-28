@@ -12,6 +12,7 @@ type post struct {
 	username string
 	message  string
 	time     time.Time
+	userID   int
 }
 
 func (c *chatView) chat() *tui.Box {
@@ -65,13 +66,13 @@ func (c *chatView) chat() *tui.Box {
 	chat := tui.NewVBox(historyBox, inputBox)
 	chat.SetSizePolicy(tui.Expanding, tui.Expanding)
 
-	//
 	input.OnSubmit(func(e *tui.Entry) {
 		historyScroll.SetAutoscrollToBottom(true)
 		messages := &post{
-			username: "mofe",
+			username: username,
 			time:     time.Now(),
 			message:  e.Text(),
+			userID:   userid,
 		}
 		history.Append(tui.NewHBox(
 			tui.NewLabel(messages.time.Format("15:04")),

@@ -31,16 +31,20 @@ func (me *LocalDatabase) init(filepath string) {
 	INSERT INTO chats (
 		Name,
 		Time,
-		Message
-		) VALUES (?,?,?)
+		Message,
+		UserID
+		) VALUES (?,?,?,?)
 		`)
 	if err != nil {
 		panic(err)
 	}
 	me.stmtCreateUser, err = me.db.Prepare(`
 	INSERT INTO users (
-		user,
+		user
 	)	VALUES (?)
 	`)
+	if err != nil {
+		panic(err)
+	}
 
 }
