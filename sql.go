@@ -2,7 +2,7 @@ package main
 
 func (me *post) storeMessage() {
 
-	ldb.stmtInsertMessage.Exec(me.username, me.time, me.message, me.userID)
+	ldb.stmtInsertMessage.Exec(me.globUsername, me.time, me.message, me.userID)
 }
 
 func getNote() (result []post) {
@@ -10,7 +10,7 @@ func getNote() (result []post) {
 	SELECT Name,Time,Message FROM chats WHERE UserID = ?
 	`
 
-	rows, err := ldb.db.Query(sqlReadall, userid)
+	rows, err := ldb.db.Query(sqlReadall, globUserid)
 	if err != nil {
 		panic(err)
 	}
@@ -18,7 +18,7 @@ func getNote() (result []post) {
 
 	for rows.Next() {
 		post := post{}
-		err = rows.Scan(&post.username, &post.time, &post.message)
+		err = rows.Scan(&post.globUsername, &post.time, &post.message)
 		if err != nil {
 			panic(err)
 		}
@@ -30,31 +30,49 @@ func getNote() (result []post) {
 func createUser(user string) {
 	ldb.stmtCreateUser.Exec(user)
 }
-func getCurrentUser() map[int]string {
-	sqlReadID := `
-	SELECT * FROM users ORDER BY rowid DESC LIMIT 1
-	`
-	row, err := ldb.db.Query(sqlReadID)
-	if err != nil {
-		panic(err)
-	}
-	defer row.Close()
-	var id int
-	var user string
-	for row.Next() {
-		err = row.Scan(&id, &user)
+func getCurrentUser(userid int, check bool) map[int]string {
+	result := map[int]string{}
+	switch check {
+	case true:
+		sqlReadID := `
+		SELECT * FROM users WHERE user_id = ?
+		`
+		row, err := ldb.db.Query(sqlReadID, userid)
 		if err != nil {
 			panic(err)
 		}
+		defer row.Close()
+		var id int
+		var user string
+		for row.Next() {
+			err = row.Scan(&id, &user)
+			if err != nil {
+				panic(err)
+			}
+		}
+		result[id] = user
+		return result
+
+	case false:
+		sqlReadID := `
+		SELECT * FROM users ORDER BY rowid DESC LIMIT 1
+		`
+		row, err := ldb.db.Query(sqlReadID)
+		if err != nil {
+			panic(err)
+		}
+		defer row.Close()
+		var id int
+		var user string
+		for row.Next() {
+			err = row.Scan(&id, &user)
+			if err != nil {
+				panic(err)
+			}
+		}
+		result[id] = user
+		return result
 	}
-
-	result := map[int]string{}
-	result[id] = user
-	return result
-
-	// err = row.Scan(&result)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// return result
+	// Should not get here
+	return nil
 }

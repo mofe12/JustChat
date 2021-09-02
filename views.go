@@ -10,7 +10,9 @@ type chatView struct {
 	historyScroll *tui.ScrollArea
 }
 
-type registerView struct{}
+type registerView struct {
+	allowToNextPage bool
+}
 
 func views() {
 

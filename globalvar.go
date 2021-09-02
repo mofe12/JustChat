@@ -1,5 +1,7 @@
 package main
 
+import "github.com/marcusolsson/tui-go"
+
 // The sign at the register view
 var logo = `
      ________  _____________________  ______________
@@ -9,8 +11,14 @@ var logo = `
  /____//_____/_____//_/ /_____/_/ /_/_/ /_/ /_/
 `
 
-// The username when user logs in
-var username string
+var ldb *LocalDatabase
+
+// The globUsername when user logs in
+var globUsername string
 
 // The user id
-var userid int
+var globUserid int
+
+/* Didn't name it globHistory because it
+only affects the chats page*/
+var history *tui.Box

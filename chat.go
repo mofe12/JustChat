@@ -9,10 +9,10 @@ import (
 )
 
 type post struct {
-	username string
-	message  string
-	time     time.Time
-	userID   int
+	globUsername string
+	message      string
+	time         time.Time
+	userID       int
 }
 
 func (c *chatView) chat() *tui.Box {
@@ -30,16 +30,7 @@ func (c *chatView) chat() *tui.Box {
 	sidebar.SetBorder(true)
 
 	// CREATES THE HISTORY OF USERS TEXT
-	history := tui.NewVBox()
-
-	for _, m := range getNote() {
-		history.Append(tui.NewHBox(
-			tui.NewLabel(m.time.Format("15:04")),
-			tui.NewPadder(1, 0, tui.NewLabel(fmt.Sprintf("<%s>", m.username))),
-			tui.NewLabel(m.message),
-			tui.NewSpacer(),
-		))
-	}
+	history = tui.NewVBox()
 	// SETS USERS TEXT AREA AND TEXT AT THE BOTTOM OF PAGE
 	historyScroll := tui.NewScrollArea(history)
 	c.historyScroll = historyScroll
@@ -69,14 +60,14 @@ func (c *chatView) chat() *tui.Box {
 	input.OnSubmit(func(e *tui.Entry) {
 		historyScroll.SetAutoscrollToBottom(true)
 		messages := &post{
-			username: username,
-			time:     time.Now(),
-			message:  e.Text(),
-			userID:   userid,
+			globUsername: globUsername,
+			time:         time.Now(),
+			message:      e.Text(),
+			userID:       globUserid,
 		}
 		history.Append(tui.NewHBox(
 			tui.NewLabel(messages.time.Format("15:04")),
-			tui.NewPadder(1, 0, tui.NewLabel(fmt.Sprintf("<%s>", messages.username))),
+			tui.NewPadder(1, 0, tui.NewLabel(fmt.Sprintf("<%s>", messages.globUsername))),
 			tui.NewLabel(messages.message),
 			tui.NewSpacer(),
 		))
