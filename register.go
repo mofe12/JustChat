@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"regexp"
 	"strconv"
 
 	"github.com/marcusolsson/tui-go"
@@ -35,17 +33,18 @@ func (r *registerView) register() *tui.Box {
 	user.OnSubmit(func(e *tui.Entry) {
 		userText := e.Text()
 		boolean, userid := checkForID(userText)
-		log.Println(userid)
 		currentUser := map[int]string{}
 		/* gets user when id is in the string
 		example: mofe#123 */
 		if boolean == true {
 			currentUser = getCurrentUser(userid, boolean)
+			r.allowToNextPage = true
 		}
 		if boolean == false {
 			createUser(e.Text())
 			user.SetText("")
 			currentUser = getCurrentUser(userid, boolean)
+			r.allowToNextPage = true
 		}
 		for k, v := range currentUser {
 			globUsername = v
@@ -86,17 +85,16 @@ func (r *registerView) register() *tui.Box {
 }
 
 func checkForID(userText string) (bool, int) {
-	re := regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
-	if re.MatchString(userText) != false {
-		submatchall := re.FindAllString(userText, -1)
-		for _, element := range submatchall {
-			id, err := strconv.Atoi(element)
-			if err != nil {
-				log.Printf("Could not get id from string %v\n", err)
+	var newWord string
+	for i, v := range userText {
+		if string(v) == "#" {
+			for _, v := range userText[i+1:] {
+				newWord = newWord + string(v)
 			}
-			return re.MatchString(userText), id
+			id, _ := strconv.Atoi(newWord)
+			return true, id
 		}
 	}
-	return re.MatchString(userText), -1
+	return false, -1
 
 }

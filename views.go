@@ -19,10 +19,9 @@ func views() {
 	var currentView int
 
 	chatView := chatView{}
-	registerView := registerView{}
+	registerView := &registerView{}
 	views := []tui.Widget{
 		registerView.register(),
-		// tui.NewVBox(tui.NewLabel("Press right arrow to continue ...")),
 		chatView.chat(),
 	}
 
@@ -36,12 +35,16 @@ func views() {
 	ui.SetKeybinding("Left", func() {
 		currentView = clamp(currentView-1, 0, len(views)-1)
 		ui.SetWidget(views[currentView])
+		registerView.allowToNextPage = false
 	})
 
 	ui.SetKeybinding("Right", func() {
-		currentView = clamp(currentView+1, 0, len(views)-1)
-		ui.SetWidget(views[currentView])
+		if registerView.allowToNextPage != false {
+			currentView = clamp(currentView+1, 0, len(views)-1)
+			ui.SetWidget(views[currentView])
+		}
 	})
+
 	// SCROLLS UP FOR CHAT VIEW
 	ui.SetKeybinding("Up", func() {
 		chatView.historyScroll.SetAutoscrollToBottom(false)
